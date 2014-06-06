@@ -25,8 +25,11 @@ import android.view.ViewGroup;
 public abstract class InfoWindow {
 
 	protected View mView;
-	protected boolean mIsVisible;
+    protected boolean mIsVisible = false;
 	protected MapView mMapView;
+
+    // hack: default marker position in list
+    private int position = 1;
 	
 	/**
 	 * @param layoutResId	the id of the view resource. 
@@ -58,23 +61,25 @@ public abstract class InfoWindow {
 	 * @param offsetX (&offsetY) the offset of the view to the position, in pixels. 
 	 * This allows to offset the view from the object position. 
 	 */
-	public void open(Object object, GeoPoint position, int offsetX, int offsetY) {
-		close(); //if it was already opened
-		onOpen(object);
+    public void open(ExtendedOverlayItem item, int offsetX, int offsetY) {
+        onOpen(item);
+        GeoPoint position = item.getPoint();
 		MapView.LayoutParams lp = new MapView.LayoutParams(
 				MapView.LayoutParams.WRAP_CONTENT,
 				MapView.LayoutParams.WRAP_CONTENT,
 				position, MapView.LayoutParams.BOTTOM_CENTER, 
 				offsetX, offsetY);
+        close(false); //if it was already opened
 		mMapView.addView(mView, lp);
+        this.position = item.getPosition();
 		mIsVisible = true;
 	}
     
-	public void close() {
+    public void close(boolean isNeedOnClose) {
 		if (mIsVisible) {
 			mIsVisible = false;
 			((ViewGroup)mView.getParent()).removeView(mView);
-			onClose();
+            if (isNeedOnClose) onClose(this.position);
 		}
 	}
 	
@@ -82,31 +87,9 @@ public abstract class InfoWindow {
 		return mIsVisible;
 	}
 	
-	/** close all InfoWindows currently opened on this MapView */
-	static public void closeAllInfoWindowsOn(MapView mapView){
-		ArrayList<InfoWindow> opened = getOpenedInfoWindowsOn(mapView);
-		for (InfoWindow infoWindow:opened){
-			infoWindow.close();
-		}
-	}
+    //Abstract methods to implement:
+    public abstract void onOpen(ExtendedOverlayItem item);
 	
-	/** return all InfoWindows currently opened on this MapView */
-	static public ArrayList<InfoWindow> getOpenedInfoWindowsOn(MapView mapView){
-		int count = mapView.getChildCount();
-		ArrayList<InfoWindow> opened = new ArrayList<InfoWindow>(count);
-		for (int i = 0; i < count; i++) {
-			final View child = mapView.getChildAt(i);
-			Object tag = child.getTag();
-			if (tag != null && tag instanceof InfoWindow){
-				InfoWindow infoWindow = (InfoWindow)tag;
-				opened.add(infoWindow);
-			}
-		}
-		return opened;
-	}
-	
-	//Abstract methods to implement in sub-classes:
-	public abstract void onOpen(Object item);
-	public abstract void onClose();
+    public abstract void onClose(int value);
 	
 }

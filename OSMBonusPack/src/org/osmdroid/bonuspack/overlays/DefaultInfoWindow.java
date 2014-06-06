@@ -4,14 +4,14 @@ import org.osmdroid.bonuspack.utils.BonusPackHelper;
 import org.osmdroid.views.MapView;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
+import android.text.Html;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * Default implementation of InfoWindow for an ExtendedOverlayItem. 
+ * Default implementation of InfoWindow.
  * It handles a text and a description. 
  * It also handles optionally a sub-description and an image. 
  * Clicking on the bubble will close it. 
@@ -20,10 +20,9 @@ import android.widget.TextView;
  */
 @Deprecated public class DefaultInfoWindow extends InfoWindow {
 
-	static int mTitleId=BonusPackHelper.UNDEFINED_RES_ID, 
-			mDescriptionId=BonusPackHelper.UNDEFINED_RES_ID, 
-			mSubDescriptionId=BonusPackHelper.UNDEFINED_RES_ID, 
-			mImageId=BonusPackHelper.UNDEFINED_RES_ID; //resource ids
+    private final Context mContext;
+
+    static int mTitleId = 0, mDescriptionId = 0, mSubDescriptionId = 0, mImageId = 0; //resource ids
 
 	private static void setResIds(Context context){
 		String packageName = context.getPackageName(); //get application package name
@@ -31,43 +30,45 @@ import android.widget.TextView;
 		mDescriptionId = context.getResources().getIdentifier("id/bubble_description", null, packageName);
 		mSubDescriptionId = context.getResources().getIdentifier("id/bubble_subdescription", null, packageName);
 		mImageId = context.getResources().getIdentifier("id/bubble_image", null, packageName);
-		if (mTitleId == BonusPackHelper.UNDEFINED_RES_ID || mDescriptionId == BonusPackHelper.UNDEFINED_RES_ID 
-				|| mSubDescriptionId == BonusPackHelper.UNDEFINED_RES_ID || mImageId == BonusPackHelper.UNDEFINED_RES_ID) {
-			Log.e(BonusPackHelper.LOG_TAG, "DefaultInfoWindow: unable to get res ids in "+packageName);
+        if (mTitleId == 0 || mDescriptionId == 0 || mSubDescriptionId == 0 || mImageId == 0) {
+            Log.e(BonusPackHelper.LOG_TAG, "DefaultInfoWindow: unable to get res ids in "+packageName);
 		}
 	}
 	
 	public DefaultInfoWindow(int layoutResId, MapView mapView) {
 		super(layoutResId, mapView);
+        mContext = mapView.getContext();
 		
-		if (mTitleId == BonusPackHelper.UNDEFINED_RES_ID)
-			setResIds(mapView.getContext());
+        if (mTitleId == 0)
+            setResIds(mContext);
 		
 		//default behavior: close it when clicking on the bubble:
 		mView.setOnTouchListener(new View.OnTouchListener() {
-			@Override public boolean onTouch(View v, MotionEvent e) {
+            @Override
+            public boolean onTouch(View v, MotionEvent e) {
 				if (e.getAction() == MotionEvent.ACTION_UP)
-					close();
-				return true;
+                    close(true);
+                return true;
 			}
 		});
 	}
 	
-	@Override public void onOpen(Object item) {
-		ExtendedOverlayItem extendedOverlayItem = (ExtendedOverlayItem)item;
-		String title = extendedOverlayItem.getTitle();
+    @Override
+    public void onOpen(ExtendedOverlayItem item) {
+        String title = item.getTitle();
 		if (title == null)
 			title = "";
 		((TextView)mView.findViewById(mTitleId /*R.id.title*/)).setText(title);
 		
-		String snippet = extendedOverlayItem.getDescription();
+        String snippet = item.getDescription();
 		if (snippet == null)
 			snippet = "";
-		((TextView)mView.findViewById(mDescriptionId /*R.id.description*/)).setText(snippet);
+        // parse ballon text as html
+        ((TextView) mView.findViewById(mDescriptionId /*R.id.description*/)).setText(Html.fromHtml(snippet));
 		
 		//handle sub-description, hidding or showing the text view:
 		TextView subDescText = (TextView)mView.findViewById(mSubDescriptionId);
-		String subDesc = extendedOverlayItem.getSubDescription();
+        String subDesc = item.getSubDescription();
 		if (subDesc != null && !("".equals(subDesc))){
 			subDescText.setText(subDesc);
 			subDescText.setVisibility(View.VISIBLE);
@@ -77,7 +78,7 @@ import android.widget.TextView;
 
 		//handle image
 		ImageView imageView = (ImageView)mView.findViewById(mImageId /*R.id.image*/);
-		Drawable image = extendedOverlayItem.getImage();
+        Drawable image = item.getImage();
 		if (image != null){
 			imageView.setImageDrawable(image); //or setBackgroundDrawable(image)?
 			imageView.setVisibility(View.VISIBLE);
@@ -85,8 +86,9 @@ import android.widget.TextView;
 			imageView.setVisibility(View.GONE);
 	}
 
-	@Override public void onClose() {
-		//by default, do nothing
+    @Override
+    public void onClose(int position) {
+        // TODO: handle ballon click here
 	}
 	
 }

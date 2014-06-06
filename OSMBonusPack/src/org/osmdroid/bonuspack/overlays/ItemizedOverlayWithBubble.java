@@ -96,7 +96,7 @@ import android.util.Log;
 	 * Close the bubble (if it's opened). 
 	 */
 	public void hideBubble(){
-		mBubble.close();
+        mBubble.close(false);
 		mItemWithBubble = null;
 	}
 	

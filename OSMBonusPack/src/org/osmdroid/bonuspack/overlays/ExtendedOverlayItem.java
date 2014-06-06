@@ -155,7 +155,7 @@ import android.graphics.drawable.Drawable;
 		Point bubbleH = getHotspot(HotspotPlace.TOP_CENTER, markerWidth, markerHeight);
 		bubbleH.offset(-markerH.x, -markerH.y);
 		
-		bubble.open(this, this.getPoint(), bubbleH.x, bubbleH.y);
+		bubble.open(this, bubbleH.x, bubbleH.y);
 		if (panIntoView)
 			mapView.getController().animateTo(getPoint());
 	}
