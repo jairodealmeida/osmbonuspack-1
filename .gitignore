@@ -1,3 +1,25 @@
+.svn/
+*.iml
+.gitignore~
+.idea/
+.DS_STORE
+.classpath
+.settings/
+target/
+classes/
+gen-external-apklibs/
+out/
+tmp/
+.project
+target
+release.properties
+pom.xml.*
+
+#Command line
+local.properties
+build.xml
+proguard-project.txt
+
 # Built application files
 *.apk
 *.ap_
