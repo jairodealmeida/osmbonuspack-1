@@ -41,7 +41,15 @@ public abstract class InfoWindow {
 		mView = inflater.inflate(layoutResId, parent, false);
 		mView.setTag(this);
 	}
-
+	public InfoWindow(MapView mapView) {
+		mMapView = mapView;
+		mIsVisible = false;
+		ViewGroup parent=(ViewGroup)mapView.getParent();
+		Context context = mapView.getContext();
+		//LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		//mView = inflater.inflate(layoutResId, parent, false);
+		//mView.setTag(this);
+	}
 	/**
 	 * Returns the Android view. This allows to set its content. 
 	 * @return the Android view
@@ -66,8 +74,10 @@ public abstract class InfoWindow {
 				MapView.LayoutParams.WRAP_CONTENT,
 				position, MapView.LayoutParams.BOTTOM_CENTER, 
 				offsetX, offsetY);
-		mMapView.addView(mView, lp);
-		mIsVisible = true;
+		if(mView!=null){
+			mMapView.addView(mView, lp);
+			mIsVisible = true;
+		}
 	}
     
 	public void close() {

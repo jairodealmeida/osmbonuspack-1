@@ -258,14 +258,17 @@ public class Polygon extends Overlay {
 		return mSnippet;
 	}
 
-	/** By default, Polygon has no InfoWindow and do not react to a tap. 
-	 * @param infoWindow the InfoWindow to be opened when tapping the Polygon. 
-	 * Note that this InfoWindow will receive an ExtendedOverlayItem (not a Polygon) as an input, 
-	 * so it MUST be able to handle ExtendedOverlayItem attributes. It will be typically a DefaultInfoWindow. 
-	 * Set it to null to remove an existing InfoWindow. 
+		/** By default, Polygon has no InfoWindow and do not react to a tap. 
+		 * @param infoWindow the InfoWindow to be opened when tapping the Polygon. 
+		 * Note that this InfoWindow will receive an ExtendedOverlayItem (not a Polygon) as an input, 
+		 * so it MUST be able to handle ExtendedOverlayItem attributes. It will be typically a DefaultInfoWindow. 
+		 * Set it to null to remove an existing InfoWindow. 
 	 */
 	public void setInfoWindow(InfoWindow infoWindow){
 		mInfoWindow = infoWindow; //new DefaultInfoWindow(layoutResId, mapView);
+	}
+	public InfoWindow getInfoWindow(){
+		return mInfoWindow;
 	}
 	
 	@Override protected void draw(Canvas canvas, MapView mapView, boolean shadow) {

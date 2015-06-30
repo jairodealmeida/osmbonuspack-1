@@ -26,6 +26,10 @@ public class FolderOverlay extends Overlay {
 		mDescription = "";
 	}
 	
+	public OverlayManager getMOverlayManager(){
+		return mOverlayManager;
+	}
+	
 	public void setName(String name){
 		mName = name;
 	}

@@ -764,4 +764,6 @@ public class KmlDocument implements Parcelable {
 		mMaxStyleId = in.readInt();
 	}
 
+	
+
 }
